@@ -1,0 +1,8 @@
+aws_profile: #a profile in ~/.aws/credentials
+kms_key: #a KMS key ARN
+s3_bucket: #an S3 bucket name
+backup:
+  - title: #a title to give this specific back-up file
+    path: #the path to back-up
+    ignore:
+      - #a string to do a simple match on which marks it for exclusion from the back-up
