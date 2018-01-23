@@ -10,8 +10,19 @@ class CompressFile:
 
     def compress(self):
         with tarfile.open(self.out_path, mode='w:gz') as tar_file:
-            tar_file.add(self.path, os.path.relpath(self.path, os.path.join(self.path, '..')),
-                         exclude=self._exclude_filter)
+            for root, directories, files in os.walk(self.path):
+                if self._exclude_filter(root):
+                    continue
+                for file in files:
+                    full_path = os.path.join(root, file)
+                    if self._exclude_filter(full_path):
+                        continue
+                    try:
+                        tar_file.add(full_path, os.path.relpath(full_path, os.path.join(self.path, '..')),
+                                     recursive=False)
+                    except OSError:
+                        print("Couldn't write {}".format(full_path))
+                        pass
 
     def compressed_path(self):
         return self.out_path
