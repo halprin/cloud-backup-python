@@ -8,11 +8,12 @@ from backup.backupfile import BackupFile
 
 
 class BackupSet:
-    def __init__(self, paths, s3_bucket, kms_key, aws_profile):
+    def __init__(self, paths, s3_bucket, kms_key, aws_profile, intermediate_path):
         self.paths = paths
         self.s3_bucket = s3_bucket
         self.kms_key = kms_key
         self.aws_profile = aws_profile
+        self.intermediate_path = intermediate_path
 
     def backup(self):
         future_set = self._archive()
@@ -24,13 +25,15 @@ class BackupSet:
         print('Uploads complete')
 
         self._cleanup(archived_paths)
+        print('Done')
 
     def _archive(self):
         future_set = set()
 
         with ProcessPoolExecutor() as executor:
             for current_title, current_path, current_ignores in self.paths:
-                current_backup_file = BackupFile(current_title, current_path, ignores=current_ignores)
+                current_backup_file = BackupFile(current_title, current_path, ignores=current_ignores,
+                                                 intermediate_path=self.intermediate_path)
                 future_set.add(executor.submit(self._archive_backup_file, current_backup_file))
 
         return future_set

@@ -1,8 +1,9 @@
 aws_profile: #a profile in ~/.aws/credentials
 kms_key: #a KMS key ARN
 s3_bucket: #an S3 bucket name
+intermediate_path: #path to store intermediate files, optional, defaults to /tmp/
 backup:
   - title: #a title to give this specific back-up file
     path: #the path to back-up
-    ignore:
+    ignore: #ignore list, optional, defaults to an empty list
       - #a string to do a simple match on which marks it for exclusion from the back-up
