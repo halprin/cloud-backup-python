@@ -1,5 +1,6 @@
 from backup.backupset import BackupSet
 import yaml
+import sys
 
 
 def read_config_file(path):
@@ -7,9 +8,16 @@ def read_config_file(path):
         return yaml.safe_load(config_file)
 
 
+def get_config_path():
+    arguments = sys.argv
+    return arguments[1] if len(arguments) > 1 else 'backup.yml'
+
+
 if __name__ == '__main__':
 
-    config = read_config_file('backup.yml')
+    config_path = get_config_path()
+    print('Using {} for configuration path'.format(config_path))
+    config = read_config_file(config_path)
 
     aws_profile = config['aws_profile']
     kms_key = config['kms_key']
