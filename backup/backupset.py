@@ -8,10 +8,11 @@ from backup.backupfile import BackupFile
 
 
 class BackupSet:
-    def __init__(self, paths, s3_bucket, kms_key, aws_profile, intermediate_path):
+    def __init__(self, paths, s3_bucket, kms_key, encryption_context, aws_profile, intermediate_path):
         self.paths = paths
         self.s3_bucket = s3_bucket
         self.kms_key = kms_key
+        self.encryption_context = encryption_context
         self.aws_profile = aws_profile
         self.intermediate_path = intermediate_path
 
@@ -39,7 +40,7 @@ class BackupSet:
         return future_set
 
     def _archive_backup_file(self, backup_file):
-        backup_file.archive(self.kms_key, self.aws_profile)
+        backup_file.archive(self.kms_key, self.aws_profile, encryption_context=self.encryption_context)
         return backup_file.archived_path()
 
     def _upload(self, archive_paths):

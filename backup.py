@@ -21,10 +21,12 @@ if __name__ == '__main__':
 
     aws_profile = config['aws_profile']
     kms_key = config['kms_key']
+    encryption_context = config['encryption_context']
     s3_bucket = config['s3_bucket']
     intermediate_path = config.get('intermediate_path', '/tmp/')
     backup_paths = [(path_info['title'], path_info['path'], path_info.get('ignore', [])) for path_info in
                     config['backup']]
 
-    backup_set = BackupSet(backup_paths, s3_bucket, kms_key, aws_profile, intermediate_path)
+    backup_set = BackupSet(backup_paths, s3_bucket, kms_key, encryption_context, aws_profile, intermediate_path)
     backup_set.backup()
+

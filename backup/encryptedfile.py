@@ -4,15 +4,12 @@ from botocore.session import Session
 
 
 class EncryptedFile:
-
-    ENCRYPTION_CONTEXT = {
-        'context': 'encryption_context'
-    }
-
-    def __init__(self, path_to_encrypt, out_path, kms_key, aws_profile):
+    def __init__(self, path_to_encrypt, out_path, kms_key, aws_profile, encryption_context='encryption_context'):
         self.path = path_to_encrypt
         self.out_path = out_path
         self.kms_key = kms_key
+        self.encryption_context = {
+            'context': encryption_context if encryption_context is not None else 'encryption_context'}
         self.aws_profile = aws_profile
 
     def encrypt(self):
@@ -21,7 +18,7 @@ class EncryptedFile:
 
         with open(self.path, 'rb') as plain_file, open(self.out_path, 'wb') as cipher_file:
             with aws_encryption_sdk.stream(mode='e', source=plain_file, key_provider=kms_key_provider,
-                                           encryption_context=self.ENCRYPTION_CONTEXT,
+                                           encryption_context=self.encryption_context,
                                            frame_length=1048576) as encryptor:
                 for chunk in encryptor:
                     cipher_file.write(chunk)
@@ -32,9 +29,9 @@ class EncryptedFile:
 
         with open(self.out_path, 'rb') as cipher_file, open(self.path, 'wb') as plain_file:
             with aws_encryption_sdk.stream(mode='d', source=cipher_file, key_provider=kms_key_provider) as decryptor:
-                encryption_context = decryptor.header.encryption_context
-                if self._dictionary_is_subset(encryption_context, self.ENCRYPTION_CONTEXT) is False:
-                    print("Decrypted context doesn't match original context! {}".format(encryption_context))
+                encrypted_context = decryptor.header.encryption_context
+                if self._dictionary_is_subset(encrypted_context, self.encryption_context) is False:
+                    print("Decrypted context doesn't match original context! {}".format(encrypted_context))
                     return
                 for chunk in decryptor:
                     plain_file.write(chunk)

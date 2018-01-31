@@ -9,9 +9,9 @@ class BackupFile:
         self.path = path_to_backup
         self.saved_encrypted_path = None
         self.ignores = ignores
-        self.intermediate_path = intermediate_path
+        self.intermediate_path = intermediate_path if intermediate_path is not None else '/tmp/'
 
-    def archive(self, kms_key, aws_profile):
+    def archive(self, kms_key, aws_profile, encryption_context=None):
         print('Compressing {}...'.format(self.title))
         compressed_file = CompressFile(self.path, '{}/{}.tgz'.format(self.intermediate_path, self.title),
                                        ignores=self.ignores)
@@ -19,7 +19,8 @@ class BackupFile:
 
         print('Encrypting {}...'.format(self.title))
         encrypted_file = EncryptedFile(compressed_file.compressed_path(),
-                                       '{}/{}.cipher'.format(self.intermediate_path, self.title), kms_key, aws_profile)
+                                       '{}/{}.cipher'.format(self.intermediate_path, self.title), kms_key, aws_profile,
+                                       encryption_context=encryption_context)
         encrypted_file.encrypt()
 
         os.remove(compressed_file.compressed_path())
