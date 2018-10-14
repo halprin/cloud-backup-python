@@ -4,7 +4,7 @@ import os
 from datetime import datetime, timezone
 from concurrent.futures import ProcessPoolExecutor
 from concurrent import futures
-from backup.backupfile import BackupFile
+from .backupfile import BackupFile
 
 
 class BackupSet:
@@ -21,11 +21,11 @@ class BackupSet:
         futures.wait(future_set)
 
         archived_paths = [future.result() for future in future_set]
-        # self._upload(archived_paths)
+        self._upload(archived_paths)
 
         print('Uploads complete')
 
-        # self._cleanup(archived_paths)
+        self._cleanup(archived_paths)
         print('Done')
 
     def _archive(self):
