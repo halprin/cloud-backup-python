@@ -21,16 +21,12 @@ class BackupFile:
         encrypted_file = EncryptedFile(compressed_file.compressed_path(),
                                        '{}/{}.cipher'.format(self.intermediate_path, self.title), kms_key, aws_profile,
                                        encryption_context=encryption_context)
-        print('After init')
         encrypted_file.encrypt()
 
         os.remove(compressed_file.compressed_path())
         self.saved_encrypted_path = encrypted_file.encrypted_path()
 
         print('Completed {}...'.format(self.title))
-
-    def unarchive(self, kms_key, aws_profile, encryption_context=None):
-        print('Decrypting {}...'.format(self.title))
 
     def archived_path(self):
         return self.saved_encrypted_path
