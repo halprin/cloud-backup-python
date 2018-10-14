@@ -1,5 +1,5 @@
-from backup.compressfile import CompressFile
-from backup.encryptedfile import EncryptedFile
+from backup.compression.compressfile import CompressFile
+from backup.encryption.encryptedfile import EncryptedFile
 import os
 
 
@@ -27,6 +27,10 @@ class BackupFile:
         self.saved_encrypted_path = encrypted_file.encrypted_path()
 
         print('Completed {}...'.format(self.title))
+
+    def unarchive(self, kms_key, aws_profile, encryption_context=None):
+        print('Decrypting {}...'.format(self.title))
+
 
     def archived_path(self):
         return self.saved_encrypted_path

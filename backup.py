@@ -2,6 +2,8 @@ from backup.backupset import BackupSet
 import yaml
 import sys
 
+from backup.encryption.decryptedfile import DecryptedFile
+
 
 def read_config_file(path):
     with open(path) as config_file:
@@ -27,6 +29,10 @@ if __name__ == '__main__':
     backup_paths = [(path_info['title'], path_info['path'], path_info.get('ignore', [])) for path_info in
                     config['backup']]
 
-    backup_set = BackupSet(backup_paths, s3_bucket, kms_key, encryption_context, aws_profile, intermediate_path)
-    backup_set.backup()
+    decrypted_file = DecryptedFile('/Volumes/Backup/Archive/Cloud/peter_music.cipher',
+                                   '/Volumes/Backup/Archive/Cloud/peter_music.tgz', kms_key, aws_profile,
+                                   encryption_context=encryption_context)
 
+    decrypted_file.decrypt()
+    # backup_set = BackupSet(backup_paths, s3_bucket, kms_key, encryption_context, aws_profile, intermediate_path)
+    # backup_set.backup()

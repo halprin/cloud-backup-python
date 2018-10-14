@@ -21,11 +21,11 @@ class BackupSet:
         futures.wait(future_set)
 
         archived_paths = [future.result() for future in future_set]
-        self._upload(archived_paths)
+        # self._upload(archived_paths)
 
         print('Uploads complete')
 
-        self._cleanup(archived_paths)
+        # self._cleanup(archived_paths)
         print('Done')
 
     def _archive(self):
