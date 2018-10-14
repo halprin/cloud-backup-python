@@ -3,7 +3,7 @@ from boto3.s3.transfer import S3Transfer
 from .compression.uncompressfile import UncompressFile
 from .encryption.decryptedfile import DecryptedFile
 import os
-import click
+from ..cli import cli_library
 
 
 class RestoreFile:
@@ -26,22 +26,23 @@ class RestoreFile:
         os.remove(self.saved_encrypted_path)
 
     def _download(self, aws_profile):
-        print('Downloading {}...'.format(self.backup_file))
+        cli_library.echo('Downloading {}...'.format(self.backup_file))
 
         s3_object = self.timestamp + '/' + self.backup_file + '.cipher'
         s3_client = Session(profile_name=aws_profile).client('s3')
         s3_object_size = s3_client.head_object(Bucket=self.s3_bucket, Key=s3_object)['ContentLength']
 
-        self._progress_bar = click.progressbar(length=s3_object_size, label='Downloading')
+        cli_library.create_progressbar('Downloading', s3_object_size)
 
         transfer_manager = S3Transfer(s3_client)
         transfer_manager.download_file(self.s3_bucket, s3_object, self._local_cipher_file(),
                                        callback=self._download_progress_callback)
-        self._progress_bar.finish()
-        print()
+
+        cli_library.finish_progressbar('Downloading')
+        cli_library.echo('')
 
     def _decrypt(self, kms_key, aws_profile, encryption_context):
-        print('Decrypting {}...'.format(self.backup_file))
+        cli_library.echo('Decrypting {}...'.format(self.backup_file))
 
         decrypted_file = DecryptedFile(self._local_cipher_file(), self._local_compress_file(), kms_key, aws_profile,
                                        encryption_context)
@@ -50,7 +51,7 @@ class RestoreFile:
         os.remove(self._local_cipher_file())
 
     def _uncompress(self):
-        print('Uncompressing {}...'.format(self.backup_file))
+        cli_library.echo('Uncompressing {}...'.format(self.backup_file))
 
         uncompress_file = UncompressFile(self._local_compress_file(), self.restore_path)
         uncompress_file.uncompress()
@@ -58,7 +59,7 @@ class RestoreFile:
         os.remove(self._local_compress_file())
 
     def _download_progress_callback(self, bytes_transfered):
-        self._progress_bar.update(bytes_transfered)
+        cli_library.update_progressbar('Downloading', bytes_transfered)
 
     def _local_cipher_file(self):
         return os.path.join(self.intermediate_path, self.backup_file + '.cipher')

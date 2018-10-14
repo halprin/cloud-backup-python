@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from concurrent.futures import ProcessPoolExecutor
 from concurrent import futures
 from .backupfile import BackupFile
+from ..cli import cli_library
 
 
 class BackupSet:
@@ -23,10 +24,10 @@ class BackupSet:
         archived_paths = [future.result() for future in future_set]
         self._upload(archived_paths)
 
-        print('Uploads complete')
+        cli_library.echo('Uploads complete')
 
         self._cleanup(archived_paths)
-        print('Done')
+        cli_library.echo('Done')
 
     def _archive(self):
         future_set = set()
@@ -47,7 +48,7 @@ class BackupSet:
         transfer_manager = S3Transfer(Session(profile_name=self.aws_profile).client('s3'))
 
         date_time = datetime.utcnow().replace(tzinfo=timezone.utc).isoformat()
-        print('Uploading {} backup set...'.format(date_time))
+        cli_library.echo('Uploading {} backup set...'.format(date_time))
 
         for current_path in archive_paths:
             current_basename = os.path.basename(current_path)
@@ -55,6 +56,6 @@ class BackupSet:
 
     @staticmethod
     def _cleanup(archived_paths):
-        print('Cleaning up...')
+        cli_library.echo('Cleaning up...')
         for archive_path in archived_paths:
             os.remove(archive_path)
