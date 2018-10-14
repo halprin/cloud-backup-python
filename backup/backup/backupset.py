@@ -4,7 +4,7 @@ import os
 from datetime import datetime, timezone
 from concurrent.futures import ProcessPoolExecutor
 from concurrent import futures
-from backup.backupfile import BackupFile
+from .backupfile import BackupFile
 
 
 class BackupSet:
