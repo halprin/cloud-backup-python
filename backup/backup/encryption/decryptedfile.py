@@ -20,8 +20,9 @@ class DecryptedFile:
             with aws_encryption_sdk.stream(mode='d', source=cipher_file, key_provider=kms_key_provider) as decryptor:
                 encrypted_context = decryptor.header.encryption_context
                 if self._dictionary_is_subset(encrypted_context, self.encryption_context) is False:
-                    print("Decrypted context doesn't match original context! {}".format(encrypted_context))
-                    return
+                    decryptor.footer = None  # Set the footer so that when decryptor is closed when leaving the with
+                    # context due to the raised exception, it doesn't throw its own unneeded exception
+                    raise EncryptionContextMismatch()
                 for chunk in decryptor:
                     plain_file.write(chunk)
 
@@ -39,3 +40,6 @@ class DecryptedFile:
 
         return is_subset
 
+
+class EncryptionContextMismatch(Exception):
+    pass

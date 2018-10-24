@@ -35,6 +35,8 @@ def restore(config_file, timestamp, backup_file, restore_path):
     config = Config(config_file)
 
     restore_file = RestoreFile(config.s3_bucket(), timestamp, backup_file, restore_path, config.intermediate_path())
-    restore_file.restore(config.kms_key(), config.aws_profile(), config.encryption_context())
-
-    click.echo('Completed restore')
+    try:
+        restore_file.restore(config.kms_key(), config.aws_profile(), config.encryption_context())
+        click.echo('Completed restore')
+    except Exception:
+        click.echo('Restore failed!')

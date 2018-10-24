@@ -1,7 +1,7 @@
 from boto3 import Session
 from boto3.s3.transfer import S3Transfer
 from .compression.uncompressfile import UncompressFile
-from .encryption.decryptedfile import DecryptedFile
+from .encryption.decryptedfile import DecryptedFile, EncryptionContextMismatch
 import os
 from ..cli import cli_library
 
@@ -46,9 +46,15 @@ class RestoreFile:
 
         decrypted_file = DecryptedFile(self._local_cipher_file(), self._local_compress_file(), kms_key, aws_profile,
                                        encryption_context)
-        decrypted_file.decrypt()
-
-        os.remove(self._local_cipher_file())
+        try:
+            decrypted_file.decrypt()
+        except EncryptionContextMismatch:
+            cli_library.echo("The encrypted file's context did not match the specified context.  The file may have "
+                             "been tampered with!")
+            os.remove(self._local_compress_file())
+            raise
+        finally:
+            os.remove(self._local_cipher_file())
 
     def _uncompress(self):
         cli_library.echo('Uncompressing {}...'.format(self.backup_file))
@@ -58,7 +64,8 @@ class RestoreFile:
 
         os.remove(self._local_compress_file())
 
-    def _download_progress_callback(self, bytes_transfered):
+    @staticmethod
+    def _download_progress_callback(bytes_transfered):
         cli_library.update_progressbar('Downloading', bytes_transfered)
 
     def _local_cipher_file(self):
