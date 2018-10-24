@@ -1,25 +1,14 @@
-import os
 import tarfile
 
 
 class UncompressFile:
-    def __init__(self, path_to_compress, out_path, ignores=None):
-        self.path = path_to_compress
+    def __init__(self, path_to_uncompress, out_path):
+        self.path = path_to_uncompress
         self.out_path = out_path
-        self.ignores = ignores
 
     def uncompress(self):
-        pass
+        with tarfile.open(self.path, mode='r:gz') as tar_file:
+            tar_file.extractall(path=self.out_path)
 
     def uncompressed_path(self):
         return self.out_path
-
-    def _exclude_filter(self, filename):
-        exclude = False
-
-        for ignore in self.ignores:
-            if filename.find(ignore) != -1:
-                exclude = True
-                break
-
-        return exclude

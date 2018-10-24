@@ -1,5 +1,6 @@
 import os
 import tarfile
+from ...cli import cli_library
 
 
 class CompressFile:
@@ -21,7 +22,7 @@ class CompressFile:
                         tar_file.add(full_path, os.path.relpath(full_path, os.path.join(self.path, '..')),
                                      recursive=False)
                     except OSError:
-                        print("Couldn't write {}".format(full_path))
+                        cli_library.echo("Couldn't write {}".format(full_path))
                         pass
 
     def compressed_path(self):
