@@ -2,6 +2,7 @@ import click
 from ..config import Config
 from ..backup.backupset import BackupSet
 from ..backup.restorefile import RestoreFile
+from .. import listing
 
 
 @click.group()
@@ -42,3 +43,17 @@ def restore(config_file, timestamp, backup_file, restore_path):
         exit_exception = click.ClickException('Restore failed!')
         exit_exception.exit_code = 3
         raise exit_exception
+
+
+@cli.command()
+@click.argument('config_file')
+@click.argument('timestamp', required=False)
+def list(config_file, timestamp):
+    config = Config(config_file)
+
+    if timestamp is not None:
+        click.echo('Listing backup files under {}'.format(timestamp))
+        listing.list_backup_files(config, timestamp)
+    else:
+        click.echo('Listing backup timestamps')
+        listing.list_timestamps(config)
