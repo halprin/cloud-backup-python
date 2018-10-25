@@ -39,4 +39,6 @@ def restore(config_file, timestamp, backup_file, restore_path):
         restore_file.restore(config.kms_key(), config.aws_profile(), config.encryption_context())
         click.echo('Completed restore')
     except Exception:
-        click.echo('Restore failed!')
+        exit_exception = click.ClickException('Restore failed!')
+        exit_exception.exit_code = 3
+        raise exit_exception
