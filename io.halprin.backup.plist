@@ -3,20 +3,21 @@
 <plist version="1.0">
     <dict>
         <key>Label</key>
-        <string>net.kendallp.backup</string>
+        <string>io.halprin.backup</string>
         <key>ProgramArguments</key>
         <array>
-            <string>/Library/Frameworks/Python.framework/Versions/3.6/bin/python3</string>
-            <string>/Library/Application Support/backup/backup.py</string>
+            <string>{script}</string>
+            <string>backup</string>
+            <string>{config_yml}</string>
         </array>
-        <key>StartCalendarInterval</key>
+        <key>EnvironmentVariables</key>
         <dict>
-            <key>Hour</key>
-            <integer>0</integer>
-            <key>Minute</key>
-            <integer>0</integer>
-            <key>Weekday</key>
-            <integer>6</integer>
+            <key>LC_ALL</key>
+            <string>en_US.utf-8</string>
+            <key>LANG</key>
+            <string>en_US.utf-8</string>
         </dict>
+        <key>StartInterval</key>
+        <integer>120</integer>
     </dict>
 </plist>
