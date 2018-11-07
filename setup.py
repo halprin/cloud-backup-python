@@ -30,6 +30,6 @@ setup(
     install_requires=get_requirements(),
     entry_points='''
         [console_scripts]
-        cloud-backup=backup.cli.main:cli
+        cloud-backup=cloud_backup.cli.main:cli
     ''',
 )
