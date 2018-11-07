@@ -8,8 +8,13 @@ def list_timestamps(config: Config):
     s3_client = Session(profile_name=config.aws_profile()).client('s3')
     object_listing = s3_client.list_objects(Bucket=config.s3_bucket(), Delimiter='/')
 
-    for prefixes in object_listing.get('CommonPrefixes'):
-        prefix_sans_slash = prefixes.get('Prefix')[0:-1]
+    prefixes = object_listing.get('CommonPrefixes')
+    if prefixes is None:
+        cli_library.echo('No backup timestamps')
+        return
+
+    for prefix in prefixes:
+        prefix_sans_slash = prefix.get('Prefix')[0:-1]
         cli_library.echo('* {}'.format(prefix_sans_slash))
 
 
