@@ -81,3 +81,7 @@ def uninstall():
     click.echo('Uninstalling cloud backup agent')
     installing.uninstall()
     click.echo('Completed uninstall')
+
+
+if __name__ == '__main__':
+    cli()
