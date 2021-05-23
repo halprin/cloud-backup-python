@@ -84,7 +84,7 @@ def _construct_plist_interval(month: Optional[int] = None, day: Optional[int] = 
     interval = []
 
     if month is not None:
-        interval.append('<key>Hour</key>')
+        interval.append('<key>Month</key>')
         interval.append('<integer>{}</integer>'.format(month))
 
     if day is not None:
