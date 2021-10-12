@@ -1,4 +1,4 @@
-aws-encryption-sdk==1.3.7
+aws-encryption-sdk==2.2.0
 boto3==1.9.23
 botocore==1.12.23
 PyYAML~=5.4.1
